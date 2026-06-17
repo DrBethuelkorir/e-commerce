@@ -16,6 +16,7 @@ public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    private String name;
     private String brand;
     private double price;
     private Long quantity;
@@ -27,6 +28,13 @@ public class Product {
     @OneToMany(mappedBy = "image",cascade = CascadeType.ALL,orphanRemoval = true)
     private List<Image> image;
 
-    public Product(String brand, double price, Long quantity, String description, Category category) {
+    public Product(String name,String brand, double price,
+                   Long quantity, String description, Category category) {
+        this.name = name;
+        this.brand = brand;
+        this.price = price;
+        this.quantity = quantity;
+        this.description = description;
+        this.category = category;
     }
 }

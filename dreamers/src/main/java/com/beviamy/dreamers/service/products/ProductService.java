@@ -24,24 +24,25 @@ public class ProductService implements IProductService {
 
     @Override
     public Product addProduct(CreateProductRequest request) {
-        Category category = Optional.ofNullable(
-                        categoryRepository.findByName(request.getCategory().getName())
-                )
-                .orElseGet(() -> {
-                    Category newCategory = new Category(request.getCategory().getName());
-                    return categoryRepository.save(newCategory);
-                });
-        request.setCategory(category);
-        return productRepository.save(createProduct(request, category));
-    }
-    private Product createProduct(CreateProductRequest request, Category category) {
-        return new Product(
-                request.getBrand(),
-                request.getPrice(),
-                request.getQuantity(),
-                request.getDescription(),
-                category
-        );
+        // Find or create category
+        Category category = categoryRepository.findByName(request.getCategory());
+
+        if (category == null) {
+            category = new Category();
+            category.setName(request.getCategory());
+            category = categoryRepository.save(category);
+        }
+
+        // Create product using setters
+        Product product = new Product();
+        product.setName(request.getName());
+        product.setBrand(request.getBrand());
+        product.setPrice(request.getPrice());
+        product.setQuantity(request.getQuantity());
+        product.setDescription(request.getDescription());
+        product.setCategory(category);
+
+        return productRepository.save(product);
     }
 
     @Override
@@ -58,12 +59,13 @@ public class ProductService implements IProductService {
                 .orElseThrow(() -> new ProductNotFoundExeption("Product not found"));
     }
     private Product updateAproduct(Product existingProduct,UpdateProductRequest request) {
+        existingProduct.setName(request.getName());
         existingProduct.setBrand(request.getBrand());
         existingProduct.setPrice(request.getPrice());
         existingProduct.setQuantity(request.getQuantity());
         existingProduct.setDescription(request.getDescription());
 
-        Category category = categoryRepository.findByName(request.getCategory().getName());
+        Category category = categoryRepository.findByName(request.getCategory());
         existingProduct.setCategory(category);
         return existingProduct;
     }
@@ -81,8 +83,8 @@ public class ProductService implements IProductService {
     }
 
     @Override
-    public List<Product> getProductsByName(String name) {
-        return this.productRepository.findByProductName(name);
+    public List<Product> getProductByName(String name) {
+        return this.productRepository.findByName(name);
     }
 
     @Override
@@ -102,7 +104,7 @@ public class ProductService implements IProductService {
 
     @Override
     public List<Product> getProductByBrandAndName(String brand, String name) {
-        return this.productRepository.findByProductNameAndBrand(name,brand);
+        return this.productRepository.findByNameAndBrand(name,brand);
     }
 
     @Override

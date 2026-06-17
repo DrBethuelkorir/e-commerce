@@ -12,7 +12,7 @@
         Product updateProduct(UpdateProductRequest product, Long id);
         void deleteProductById(Long id);
         List<Product> getAllProducts();
-        List<Product> getProductsByName(String name);
+        List<Product> getProductByName(String name);
         List<Product> getProductByCategory(String category);
         List<Product> getProductByBrand(String brand);
         List<Product> getProductByCategoryAndBrand(String category, String brand);

@@ -5,10 +5,11 @@ import lombok.Data;
 
 @Data
 public class UpdateProductRequest {
+    private String name;
     private String brand;
     private double price;
     private Long quantity;
     private String description;
-    private Category category;
+    private String category;
 }
 
