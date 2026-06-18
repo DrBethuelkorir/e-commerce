@@ -24,7 +24,11 @@ public class CategoryService implements ICategoryService{
 
     @Override
     public Category findByName(String name) {
-        return this.categoryRepository.findByName(name);
+        Category category = this.categoryRepository.findByName(name);
+        if (category == null) {
+            throw new CategoryNotFoundExeption("Category not found with name: " + name);
+        }
+        return category;
     }
 
     @Override

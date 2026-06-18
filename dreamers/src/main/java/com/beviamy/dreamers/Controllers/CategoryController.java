@@ -45,7 +45,7 @@
             }
         }
 
-        @GetMapping("/category/{id}/category")
+        @GetMapping("/category/{id}")
         public ResponseEntity<APIResonse> getcategorybyid(@PathVariable long id){
             try {
                 Category category = categoryService.findById(id);
@@ -55,17 +55,21 @@
                 return ResponseEntity.status(NOT_FOUND).body(new APIResonse(e.getMessage(),NOT_FOUND));
             }
         }
-        @GetMapping("/category/{name}/category")
-        public ResponseEntity<APIResonse> getcategorybyName(@PathVariable String name){
+        @GetMapping("/{name}")
+        public ResponseEntity<APIResonse> getCategoryByName(@PathVariable("name") String name) {
             try {
                 Category category = categoryService.findByName(name);
-                return ResponseEntity.ok(new APIResonse("found",category));
-            }
-            catch (CategoryNotFoundExeption e){
-                return ResponseEntity.status(NOT_FOUND).body(new APIResonse(e.getMessage(),NOT_FOUND));
+                if (category == null) {
+                    return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                            .body(new APIResonse("Category not found: " + name, HttpStatus.NOT_FOUND.value()));
+                }
+                return ResponseEntity.ok(new APIResonse("found", category));
+            } catch (Exception e) {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                        .body(new APIResonse("Error: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.value()));
             }
         }
-        @DeleteMapping("/category/{id}/delete")
+        @DeleteMapping("/{id}")
         public ResponseEntity<APIResonse> deletecategorybyid(@PathVariable long id){
             try {
                 categoryService.deleteCategory(id);

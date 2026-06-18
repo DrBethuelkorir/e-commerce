@@ -8,6 +8,7 @@ import com.beviamy.dreamers.models.Category;
 import com.beviamy.dreamers.models.Product;
 import com.beviamy.dreamers.Repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 
@@ -21,6 +22,7 @@ public class ProductService implements IProductService {
 
     private final ProductRepository productRepository;
     private final CategoryRepository categoryRepository;
+    private final ModelMapper modelMapper;
 
     @Override
     public Product addProduct(CreateProductRequest request) {
@@ -45,11 +47,11 @@ public class ProductService implements IProductService {
         return productRepository.save(product);
     }
 
-    @Override
-    public Product getProductById(Long id) {
-        return this.productRepository.findById(id)
-                .orElseThrow(() -> new ProductNotFoundExeption("Product not found"));
-    }
+        @Override
+        public Product getProductById(Long id) {
+            return this.productRepository.findById(id)
+                    .orElseThrow(() -> new ProductNotFoundExeption("Product not found"));
+        }
 
     @Override
     public Product updateProduct(UpdateProductRequest request, Long id) {
