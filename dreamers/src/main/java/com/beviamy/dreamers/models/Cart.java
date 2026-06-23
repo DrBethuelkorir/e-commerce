@@ -26,6 +26,10 @@ public class Cart {
     @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<CartItems> cartItems = new HashSet<>();
 
+    @OneToOne
+    @JoinColumn(name = "user-id")
+    private User user;
+
     private void updateTotalAmount() {
         if (cartItems == null || cartItems.isEmpty()) {
             this.totalAmount = BigDecimal.ZERO;
