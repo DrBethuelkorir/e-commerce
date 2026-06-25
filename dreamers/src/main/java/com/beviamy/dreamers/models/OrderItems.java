@@ -1,9 +1,6 @@
 package com.beviamy.dreamers.models;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -15,6 +12,8 @@ import java.math.BigDecimal;
 @Setter
 @NoArgsConstructor
 public class OrderItems {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     private int quantity;
     private BigDecimal unitPrice;
