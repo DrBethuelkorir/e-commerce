@@ -6,11 +6,13 @@ import com.beviamy.dreamers.Request.createUserRequest;
 import com.beviamy.dreamers.Request.updateUser;
 import com.beviamy.dreamers.models.User;
 
+import java.util.List;
+
 public interface IUserService {
     User findById(Long id);
     User createUser(createUserRequest request);
     User updateUser(updateUser request, long id);
     void deleteUser(Long id);
-
     UserDto convertToDto(User user);
+    List<User> findall();
 }
