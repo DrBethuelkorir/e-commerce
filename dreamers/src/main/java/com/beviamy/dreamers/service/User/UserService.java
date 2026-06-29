@@ -11,6 +11,7 @@ import com.beviamy.dreamers.models.User;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.List;
 
@@ -22,8 +23,8 @@ public class UserService implements IUserService {
     public final UserRepository userRepository;
     private final ModelMapper modelMapper;
 
-    @Override
-    public User findById(Long id) {
+    @Override()
+    public User findById(@PathVariable Long id) {
         return  userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("User Not Found"));
     }

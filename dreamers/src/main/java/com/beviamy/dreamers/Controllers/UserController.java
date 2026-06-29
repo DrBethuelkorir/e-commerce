@@ -26,6 +26,18 @@ import static org.springframework.http.HttpStatus.NOT_FOUND;
 public class UserController {
     private final IUserService userService;
 
+    @GetMapping("/{id}/user")
+    public ResponseEntity<APIResonse> getUserById(@PathVariable Long id){
+        try {
+            User user = userService.findById(id);
+//            UserDto userDto = userService.convertToDto(user);
+            return ResponseEntity.ok(new APIResonse("User found", user));
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.status(NOT_FOUND)
+                    .body(new APIResonse("User not found", false));
+        }
+    }
+
     @GetMapping("{userId}/adduser")
     public ResponseEntity<APIResonse> getUserById(@PathVariable long userId) {
         try {

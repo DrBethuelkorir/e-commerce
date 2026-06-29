@@ -2,7 +2,11 @@ package com.beviamy.dreamers.Controllers;
 
 import com.beviamy.dreamers.APIResonse;
 import com.beviamy.dreamers.exeption.ResourceNotFoundException;
+import com.beviamy.dreamers.models.Cart;
+import com.beviamy.dreamers.models.User;
+import com.beviamy.dreamers.service.Cart.ICartService;
 import com.beviamy.dreamers.service.CartItem.ICartItemService;
+import com.beviamy.dreamers.service.User.IUserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,19 +20,25 @@ import static org.springframework.http.HttpStatus.NOT_FOUND;
 public class CartItemController {
 
     private final ICartItemService cartItemService;
+    private final IUserService userService;
+    private final ICartService cartService;
 
-    @GetMapping("/items/add")
+    @PostMapping("/items/add")
     public ResponseEntity<APIResonse> addItemsToTheCart(
-            @RequestParam long cartId,
+
             @RequestParam long productId,
             @RequestParam int quantity
     ){
         try {
-            cartItemService.addItemToCart(cartId,productId,quantity);
-            return ResponseEntity.ok(new APIResonse("success",true));
+
+            User user = userService.findById(1L);
+            Cart cart = cartService.cartInitializer(user);
+
+            cartItemService.addItemToCart(cart.getId(),productId,quantity);
+            return ResponseEntity.ok(new APIResonse("product added successfully",true));
         } catch (ResourceNotFoundException e) {
             return ResponseEntity.status(NOT_FOUND)
-                    .body(new APIResonse("not found",false));
+                    .body(new APIResonse("not found",e.getMessage()));
         }
     }
     @DeleteMapping("item/delete")

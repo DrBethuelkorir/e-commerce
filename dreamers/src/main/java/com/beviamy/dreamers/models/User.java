@@ -1,5 +1,6 @@
     package com.beviamy.dreamers.models;
 
+    import com.fasterxml.jackson.annotation.JsonIgnore;
     import jakarta.persistence.*;
     import lombok.Getter;
     import lombok.NoArgsConstructor;
@@ -23,9 +24,12 @@
         private String password;
 
         @OneToOne(mappedBy ="user" ,cascade = CascadeType.ALL)
+        @JsonIgnore
         private Cart cart;
 
+
         @OneToMany(mappedBy ="user" ,cascade = CascadeType.ALL)
+        @JsonIgnore
         private List<Order> order;
 
         public User(String firstName, String lastName, String email,
