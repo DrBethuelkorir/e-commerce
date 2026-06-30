@@ -1,5 +1,6 @@
 package com.beviamy.dreamers.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -20,6 +21,7 @@ public class OrderItems {
 
     @ManyToOne
     @JoinColumn(name = "order-id")
+    @JsonIgnore
     private Order order;
     @ManyToOne
     @JoinColumn(name = "product-id")

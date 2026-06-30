@@ -1,6 +1,7 @@
 package com.beviamy.dreamers.models;
 
 import com.beviamy.dreamers.enums.OrderStatus;
+import com.fasterxml.jackson.annotation.JsonBackReference;  // ← CHANGE IMPORT
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -29,6 +30,7 @@ public class Order {
 
     @ManyToOne
     @JoinColumn(name = "user-id")
+    @JsonBackReference  // ← CHANGED THIS
     private User user;
 
     public Order(
@@ -36,11 +38,10 @@ public class Order {
             BigDecimal totalAmount,
             OrderStatus orderStatus,
             Set<OrderItems> orderItems
-        ) {
+    ) {
         this.orderDate = orderDate;
         this.totalAmount = totalAmount;
         this.orderStatus = orderStatus;
         this.orderItems = orderItems;
     }
-
 }

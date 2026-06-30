@@ -7,6 +7,7 @@ import com.beviamy.dreamers.models.Cart;
 import com.beviamy.dreamers.models.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.Optional;
@@ -24,25 +25,38 @@ public class CartService implements ICartService {
                 .orElseThrow(() -> new ResourceNotFoundException("Cart not found"));
         BigDecimal totalPrice = cart.getTotalAmount();
         cart.setTotalAmount(totalPrice);
-    return cartRepository.save(cart);
+        return cartRepository.save(cart);
     }
 
     @Override
+    @Transactional
     public void cleanCart(Long id) {
-        Cart cart =  getCart(id);
+        // 1. Delete all cart items from database
         cartItemRepository.deleteAllBycartId(id);
+
+        // 2. Get the cart
+        Cart cart = cartRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Cart not found"));
+
+        // 3. Clear the items collection (this is the key fix!)
         cart.getCartItems().clear();
-        cartRepository.deleteById(id);
+
+        // 4. Reset total amount
+        cart.setTotalAmount(BigDecimal.ZERO);
+
+        // 5. Save the cart
+        cartRepository.save(cart);
     }
 
     @Override
     public BigDecimal getTotalPrice(Long id) {
-        Cart cart  = getCart(id);
+        Cart cart = getCart(id);
         return cart.getTotalAmount();
     }
+
     @Override
-    public Cart cartInitializer(User user){
-        return Optional.ofNullable(getCartByUserId(user.getId())).orElseGet(() ->{
+    public Cart cartInitializer(User user) {
+        return Optional.ofNullable(getCartByUserId(user.getId())).orElseGet(() -> {
             Cart cart = new Cart();
             cart.setUser(user);
             return cartRepository.save(cart);

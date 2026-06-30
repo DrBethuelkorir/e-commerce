@@ -29,9 +29,8 @@ public class UserController {
     @GetMapping("/{id}/user")
     public ResponseEntity<APIResonse> getUserById(@PathVariable Long id){
         try {
-            User user = userService.findById(id);
-//            UserDto userDto = userService.convertToDto(user);
-            return ResponseEntity.ok(new APIResonse("User found", user));
+            UserDto userDto = userService.getUserWithCart(id);
+            return ResponseEntity.ok(new APIResonse("User found", userDto));
         } catch (ResourceNotFoundException e) {
             return ResponseEntity.status(NOT_FOUND)
                     .body(new APIResonse("User not found", false));
@@ -41,8 +40,7 @@ public class UserController {
     @GetMapping("{userId}/adduser")
     public ResponseEntity<APIResonse> getUserById(@PathVariable long userId) {
         try {
-            User user = userService.findById(userId);
-            UserDto userDto = userService.convertToDto(user);
+            UserDto userDto = userService.getUserWithCart(userId);
             return ResponseEntity.ok(new APIResonse("user found", userDto));
         } catch (ResourceNotFoundException e) {
             return ResponseEntity.status(NOT_FOUND)

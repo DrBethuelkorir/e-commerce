@@ -12,6 +12,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
@@ -31,19 +32,26 @@ public class ProductService implements IProductService {
 
         if (category == null) {
             category = new Category();
-            category.setName(request.getCategory());
+            category.setName(String.valueOf(request.getCategory()));
             category = categoryRepository.save(category);
         }
-
-        // Create product using setters
         Product product = new Product();
-        product.setName(request.getName());
-        product.setBrand(request.getBrand());
-        product.setPrice(request.getPrice());
-        product.setQuantity(request.getQuantity());
-        product.setDescription(request.getDescription());
-        product.setCategory(category);
+        if (product.getName().equals(request.getName())
+                && product.getBrand().equals(request.getBrand())
+                && product.getPrice().compareTo(request.getPrice()) == 0
+                && product.getCategory().getName().equalsIgnoreCase(request.getCategory())) {            product.setQuantity(product.getQuantity() + request.getQuantity());
+        } else {
 
+            // Create product using setters
+
+            product.setName(request.getName());
+            product.setBrand(request.getBrand());
+            product.setPrice(request.getPrice());
+            product.setQuantity(request.getQuantity());
+            product.setDescription(request.getDescription());
+            product.setCategory(category);
+
+        }
         return productRepository.save(product);
     }
 
@@ -63,7 +71,7 @@ public class ProductService implements IProductService {
     private Product updateAproduct(Product existingProduct,UpdateProductRequest request) {
         existingProduct.setName(request.getName());
         existingProduct.setBrand(request.getBrand());
-        existingProduct.setPrice(request.getPrice());
+        existingProduct.setPrice(BigDecimal.valueOf(request.getPrice()));
         existingProduct.setQuantity(request.getQuantity());
         existingProduct.setDescription(request.getDescription());
 

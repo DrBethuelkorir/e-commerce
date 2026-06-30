@@ -36,7 +36,7 @@ public class CartItemService implements ICartItemService{
             cartItems.setCart(cart);
             cartItems.setProduct(product);
             cartItems.setQuantity(Quantity);
-            cartItems.setUnitPrice(BigDecimal.valueOf(product.getPrice()));
+            cartItems.setUnitPrice(product.getPrice());
         }
         else{
             cartItems.setQuantity(cartItems.getQuantity() + Quantity);
@@ -63,8 +63,8 @@ public class CartItemService implements ICartItemService{
                         .getId().equals(ProductId))
                 .findFirst().ifPresent(item -> {
                     item.setQuantity(quantity);
-                    item.setUnitPrice(BigDecimal.valueOf(productService.getProductById(ProductId)
-                            .getPrice()));
+                    item.setUnitPrice(productService.getProductById(ProductId)
+                            .getPrice());
                     item.calculateTotalPrice();
                 });
         BigDecimal Totalprice = cart.getTotalAmount();
