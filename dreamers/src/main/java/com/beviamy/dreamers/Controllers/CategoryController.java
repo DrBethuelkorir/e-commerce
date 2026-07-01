@@ -22,7 +22,7 @@
         private final ICategoryService categoryService;
 
         @GetMapping("/all")
-        public ResponseEntity<APIResonse> getallcategories(){
+        public ResponseEntity<APIResonse> getAllCategories(){
             try {
                 List<Category> categories = categoryService.findAll();
                 return ResponseEntity.ok(new APIResonse("found",categories));
@@ -35,7 +35,7 @@
         }
 
         @PostMapping("/add")
-        public ResponseEntity<APIResonse> addcategory(@RequestBody Category name){
+        public ResponseEntity<APIResonse> addCategory(@RequestBody Category name){
             try {
                 Category category = categoryService.addCategory(name);
                 return ResponseEntity.ok(new APIResonse("added",category));
@@ -46,7 +46,7 @@
         }
 
         @GetMapping("/category/{id}")
-        public ResponseEntity<APIResonse> getcategorybyid(@PathVariable long id){
+        public ResponseEntity<APIResonse> getCategoryById(@PathVariable long id){
             try {
                 Category category = categoryService.findById(id);
                 return ResponseEntity.ok(new APIResonse("found",category));
@@ -70,7 +70,7 @@
             }
         }
         @DeleteMapping("/{id}")
-        public ResponseEntity<APIResonse> deletecategorybyid(@PathVariable long id){
+        public ResponseEntity<APIResonse> deleteCategoryById(@PathVariable long id){
             try {
                 categoryService.deleteCategory(id);
                 return ResponseEntity.ok(new APIResonse("deleted",null));
@@ -80,7 +80,7 @@
             }
         }
         @PutMapping("/category/{id}/update")
-        public ResponseEntity<APIResonse> updatecategory(@RequestParam long id, @RequestBody Category name){
+        public ResponseEntity<APIResonse> updateCategory(@RequestParam long id, @RequestBody Category name){
             try {
                 Category category = categoryService.updateCategory(name, id);
                 return ResponseEntity.ok(new APIResonse("updated",category));

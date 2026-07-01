@@ -9,6 +9,7 @@
     import lombok.Setter;
     import org.hibernate.annotations.NaturalId;
 
+    import java.util.Collection;
     import java.util.List;
 
     @Entity
@@ -32,7 +33,24 @@
 
         @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
         @JsonManagedReference
-        private List<Order> orders;  // ← Changed from "order" to "orders"
+        private List<Order> orders;
+
+        @ManyToMany(
+                fetch = FetchType.EAGER,
+                cascade = {
+                        CascadeType.DETACH,
+                        CascadeType.MERGE,
+                        CascadeType.PERSIST,
+                        CascadeType.REFRESH
+                        }
+                )
+        @JoinTable(
+
+                name = "user_roles",
+                joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
+                inverseJoinColumns = @JoinColumn(name = "roles_id",referencedColumnName = "id")
+        )
+        private Collection<Roles> roles;
 
         public User(String firstName, String lastName, String email,
                     String password, Cart cart, List<Order> orders) {

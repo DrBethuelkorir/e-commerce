@@ -1,16 +1,15 @@
 package com.beviamy.dreamers.service.products;
 
 import com.beviamy.dreamers.Repository.CategoryRepository;
+import com.beviamy.dreamers.Repository.ProductRepository;
 import com.beviamy.dreamers.Request.CreateProductRequest;
 import com.beviamy.dreamers.Request.UpdateProductRequest;
 import com.beviamy.dreamers.exeption.ProductNotFoundExeption;
 import com.beviamy.dreamers.models.Category;
 import com.beviamy.dreamers.models.Product;
-import com.beviamy.dreamers.Repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
-
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -20,55 +19,61 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class ProductService implements IProductService {
 
-
     private final ProductRepository productRepository;
     private final CategoryRepository categoryRepository;
     private final ModelMapper modelMapper;
 
     @Override
     public Product addProduct(CreateProductRequest request) {
-        // Find or create category
+        // 1. Find or create category
         Category category = categoryRepository.findByName(request.getCategory());
-
         if (category == null) {
             category = new Category();
-            category.setName(String.valueOf(request.getCategory()));
+            category.setName(request.getCategory());
             category = categoryRepository.save(category);
         }
-        Product product = new Product();
-        if (product.getName().equals(request.getName())
-                && product.getBrand().equals(request.getBrand())
-                && product.getPrice().compareTo(request.getPrice()) == 0
-                && product.getCategory().getName().equalsIgnoreCase(request.getCategory())) {            product.setQuantity(product.getQuantity() + request.getQuantity());
+
+        // 2. Check if product exists (by name, brand, price, category)
+        Optional<Product> existingProduct = productRepository.findByNameAndBrandAndPriceAndCategory(
+                request.getName(),
+                request.getBrand(),
+                request.getPrice(),
+                category
+        );
+
+        if (existingProduct.isPresent()) {
+            // 3. Product exists - update quantity
+            Product product = existingProduct.get();
+            product.setQuantity(product.getQuantity() + request.getQuantity());
+            return productRepository.save(product);
         } else {
-
-            // Create product using setters
-
+            // 4. Product doesn't exist - create new
+            Product product = new Product();
             product.setName(request.getName());
             product.setBrand(request.getBrand());
             product.setPrice(request.getPrice());
             product.setQuantity(request.getQuantity());
             product.setDescription(request.getDescription());
             product.setCategory(category);
-
+            return productRepository.save(product);
         }
-        return productRepository.save(product);
     }
 
-        @Override
-        public Product getProductById(Long id) {
-            return this.productRepository.findById(id)
-                    .orElseThrow(() -> new ProductNotFoundExeption("Product not found"));
-        }
+    @Override
+    public Product getProductById(Long id) {
+        return productRepository.findById(id)
+                .orElseThrow(() -> new ProductNotFoundExeption("Product not found"));
+    }
 
     @Override
     public Product updateProduct(UpdateProductRequest request, Long id) {
         return productRepository.findById(id)
-                .map(existingProduct -> updateAproduct(existingProduct,request))
-                .map(productRepository :: save)
+                .map(existingProduct -> updateAproduct(existingProduct, request))
+                .map(productRepository::save)
                 .orElseThrow(() -> new ProductNotFoundExeption("Product not found"));
     }
-    private Product updateAproduct(Product existingProduct,UpdateProductRequest request) {
+
+    private Product updateAproduct(Product existingProduct, UpdateProductRequest request) {
         existingProduct.setName(request.getName());
         existingProduct.setBrand(request.getBrand());
         existingProduct.setPrice(BigDecimal.valueOf(request.getPrice()));
@@ -76,15 +81,18 @@ public class ProductService implements IProductService {
         existingProduct.setDescription(request.getDescription());
 
         Category category = categoryRepository.findByName(request.getCategory());
-        existingProduct.setCategory(category);
+        if (category != null) {
+            existingProduct.setCategory(category);
+        }
         return existingProduct;
     }
 
     @Override
     public void deleteProductById(Long id) {
-    this.productRepository.findById(id).ifPresentOrElse(productRepository::delete,
-            () -> {throw new ProductNotFoundExeption("Product not found");
-    });
+        productRepository.findById(id).ifPresentOrElse(
+                productRepository::delete,
+                () -> { throw new ProductNotFoundExeption("Product not found"); }
+        );
     }
 
     @Override
@@ -94,31 +102,31 @@ public class ProductService implements IProductService {
 
     @Override
     public List<Product> getProductByName(String name) {
-        return this.productRepository.findByName(name);
+        return productRepository.findByName(name);
     }
 
     @Override
     public List<Product> getProductByCategory(String category) {
-        return this.productRepository.findByCategoryName(category);
+        return productRepository.findByCategoryName(category);
     }
 
     @Override
     public List<Product> getProductByBrand(String brand) {
-        return this.productRepository.findByBrand(brand);
+        return productRepository.findByBrand(brand);
     }
 
     @Override
     public List<Product> getProductByCategoryAndBrand(String category, String brand) {
-        return this.productRepository.findByCategoryNameAndBrand(category,brand);
+        return productRepository.findByCategoryNameAndBrand(category, brand);
     }
 
     @Override
     public List<Product> getProductByBrandAndName(String brand, String name) {
-        return this.productRepository.findByNameAndBrand(name,brand);
+        return productRepository.findByNameAndBrand(name, brand);
     }
 
     @Override
     public long countProductsByBrandAndName(String brand, String name) {
-        return this.productRepository.countByBrandAndName(brand,name);
+        return productRepository.countByBrandAndName(brand, name);
     }
 }
